@@ -132,12 +132,20 @@ class Controller extends Speaker
     {
         $data = $this->soap("AVTransport", "GetPositionInfo");
 
+        # Check for line in mode
+        if ($data["TrackMetaData"] === "NOT_IMPLEMENTED") {
+            $state = new State($data["TrackURI"]);
+            $state->stream = "Line-In";
+            return $state;
+        }
+
+        # Check for an empty queue
         if (!$data["TrackMetaData"]) {
             return new State;
         }
 
         $parser = new XmlParser($data["TrackMetaData"]);
-        $state = State::createFromXml($parser, $this);
+        $state = State::createFromXml($parser->getTag("item"), $this);
 
         if ((string) $parser->getTag("streamContent")) {
             $info = $this->getMediaInfo();
@@ -302,7 +310,24 @@ class Controller extends Speaker
     {
         $media = $this->getMediaInfo();
 
-        return (substr($media["CurrentURI"], 0, 18) === "x-sonosapi-stream:");
+        $uri = $media["CurrentURI"];
+
+        # Standard streams
+        if (substr($uri, 0, 18) === "x-sonosapi-stream:") {
+            return true;
+        }
+
+        # Line in
+        if (substr($uri, 0, 16) === "x-rincon-stream:") {
+            return true;
+        }
+
+        # Line in (playbar)
+        if (substr($uri, 0, 18) === "x-sonos-htastream:") {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -321,6 +346,28 @@ class Controller extends Speaker
         ]);
 
         return $this;
+    }
+
+
+    /**
+     * Play a line-in from a speaker.
+     *
+     * If no speaker is passed then the current controller's is used.
+     *
+     * @param Speaker|null $speaker The speaker to get the line-in from
+     *
+     * @return static
+     */
+    public function useLineIn(Speaker $speaker = null)
+    {
+        if ($speaker === null) {
+            $speaker = $this;
+        }
+
+        $uri = "x-rincon-stream:" . $speaker->getUuid();
+        $stream = new Stream($uri, "Line-In");
+
+        return $this->useStream($stream);
     }
 
 
@@ -636,14 +683,20 @@ class Controller extends Speaker
      */
     public function restoreState(ControllerState $state)
     {
-        $this->getQueue()->clear()->addTracks($state->tracks);
+        $queue = $this->getQueue();
+        $queue->clear();
+        if (count($state->tracks) > 0) {
+            $queue->addTracks($state->tracks);
+        }
 
         if (count($state->tracks) > 0) {
             $this->selectTrack($state->track);
 
-            list($hours, $minutes, $seconds) = explode(":", $state->position);
-            $time = ((($hours * 60) + $minutes) * 60) + $seconds;
-            $this->seek($time);
+            if ($state->position) {
+                list($hours, $minutes, $seconds) = explode(":", $state->position);
+                $time = ((($hours * 60) + $minutes) * 60) + $seconds;
+                $this->seek($time);
+            }
         }
 
         $this->setShuffle($state->shuffle);
@@ -727,5 +780,16 @@ class Controller extends Speaker
         $this->restoreState($state);
 
         return $this;
+    }
+
+
+    /**
+     * Get the network instance used by this controller.
+     *
+     * @return Network
+     */
+    public function getNetwork()
+    {
+        return $this->network;
     }
 }

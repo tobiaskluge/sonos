@@ -24,7 +24,7 @@ class Device
     protected $model;
 
     /**
-     * @var CacheInterface $cache The cache object to use for the expensive multicast discover to find Sonos devices on the network.
+     * @var CacheInterface $cache The long-lived cache object from the Network instance.
      */
     protected $cache;
 
@@ -129,10 +129,16 @@ class Device
         }
 
         try {
-            return $soap->__soapCall($action, $soapParams);
+            $result = $soap->__soapCall($action, $soapParams);
+            $this->logger->debug("REQUEST: " . $soap->__getLastRequest());
+            $this->logger->debug("RESPONSE: " . $soap->__getLastResponse());
         } catch (\SoapFault $e) {
+            $this->logger->debug("REQUEST: " . $soap->__getLastRequest());
+            $this->logger->debug("RESPONSE: " . $soap->__getLastResponse());
             throw new Exceptions\SoapException($e, $soap);
         }
+
+        return $result;
     }
 
 
@@ -172,13 +178,19 @@ class Device
 
         $models = [
             "S1"    =>  "PLAY:1",
+            "S12"   =>  "PLAY:1",
             "S3"    =>  "PLAY:3",
             "S5"    =>  "PLAY:5",
+            "S6"    =>  "PLAY:5",
             "S9"    =>  "PLAYBAR",
+            "S11"   =>  "PLAYBASE",
+            "S13"   =>  "ONE",
+            "ZP80"  =>  "ZONEPLAYER",
             "ZP90"  =>  "CONNECT",
+            "ZP100" =>  "CONNECT:AMP",
             "ZP120" =>  "CONNECT:AMP",
         ];
 
-        return in_array($model, array_keys($models), true);
+        return array_key_exists($model, $models);
     }
 }

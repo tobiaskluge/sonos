@@ -1,8 +1,9 @@
 <?php
 
-namespace duncan3dc\Sonos\Test;
+namespace duncan3dc\SonosTests;
 
-use duncan3dc\Sonos\Tracks\QueueTrack;
+use duncan3dc\Sonos\Playlist;
+use duncan3dc\Sonos\Tracks\Track;
 
 class PlaylistLiveTest extends LiveTest
 {
@@ -33,6 +34,12 @@ class PlaylistLiveTest extends LiveTest
     {
         $this->assertSame($this->playlistName, $this->playlist->getName());
     }
+    public function testGetNameFromNetwork()
+    {
+        $id = $this->playlist->getId();
+        $playlist = new Playlist($id, $this->network->getController());
+        $this->assertSame($this->playlistName, $playlist->getName());
+    }
 
 
     public function testAddTrack()
@@ -45,7 +52,7 @@ class PlaylistLiveTest extends LiveTest
         $this->assertSame(1, count($tracks));
 
         $track = $tracks[0];
-        $this->assertInstanceOf(QueueTrack::class, $track);
+        $this->assertInstanceOf(Track::class, $track);
         $this->assertSame($uri, $track->uri);
     }
 
@@ -62,7 +69,7 @@ class PlaylistLiveTest extends LiveTest
 
         $this->assertSame(2, count($tracks));
 
-        $this->assertContainsOnlyInstancesOf(QueueTrack::class, $tracks);
+        $this->assertContainsOnlyInstancesOf(Track::class, $tracks);
         foreach ($tracks as $key => $track) {
             $this->assertSame($uris[$key], $track->uri);
         }
@@ -76,14 +83,14 @@ class PlaylistLiveTest extends LiveTest
             "x-file-cifs://TEST/music/artist/album/02-Song.mp3",
         ];
         $this->playlist->addTracks($uris);
-        $this->playlist->removeTracks([0]);
+        $this->playlist->removeTrack(0);
 
         $tracks = $this->playlist->getTracks();
 
         $this->assertSame(1, count($tracks));
 
         $track = $tracks[0];
-        $this->assertInstanceOf(QueueTrack::class, $track);
+        $this->assertInstanceOf(Track::class, $track);
         $this->assertSame($uris[1], $track->uri);
     }
 
@@ -103,7 +110,7 @@ class PlaylistLiveTest extends LiveTest
 
         $this->assertSame(2, count($tracks));
 
-        $this->assertContainsOnlyInstancesOf(QueueTrack::class, $tracks);
+        $this->assertContainsOnlyInstancesOf(Track::class, $tracks);
         foreach ($tracks as $key => $track) {
             $this->assertSame($uris[$key], $track->uri);
         }

@@ -9,15 +9,28 @@ use duncan3dc\DomParser\XmlElement;
  */
 class Alarm
 {
-    const ONCE = 0;
-    const MONDAY = 1;
-    const TUESDAY = 2;
-    const WEDNESDAY = 4;
-    const THURSDAY = 8;
-    const FRIDAY = 16;
-    const SATURDAY = 32;
-    const SUNDAY = 64;
-    const DAILY = 127;
+    const ONCE      =   0;
+    const MONDAY    =   1;
+    const TUESDAY   =   self::MONDAY    * 2;
+    const WEDNESDAY =   self::TUESDAY   * 2;
+    const THURSDAY  =   self::WEDNESDAY * 2;
+    const FRIDAY    =   self::THURSDAY  * 2;
+    const SATURDAY  =   self::FRIDAY    * 2;
+    const SUNDAY    =   self::SATURDAY  * 2;
+    const DAILY     =   (self::SUNDAY   * 2) - 1;
+
+    /**
+     * @var array $days An mapping of php day values to our day constants.
+     */
+    protected $days = [
+        "0" =>  self::SUNDAY,
+        "1" =>  self::MONDAY,
+        "2" =>  self::TUESDAY,
+        "3" =>  self::WEDNESDAY,
+        "4" =>  self::THURSDAY,
+        "5" =>  self::FRIDAY,
+        "6" =>  self::SATURDAY,
+    ];
 
     /**
      * @var string $id The unique id of the alarm
@@ -216,26 +229,17 @@ class Alarm
         if ($data === "DAILY") {
             $data = "ON_0123456";
         } elseif ($data === "WEEKDAYS") {
-            $data = "ON_01234";
+            $data = "ON_12345";
         } elseif ($data === "WEEKENDS") {
-            $data = "ON_56";
+            $data = "ON_06";
         }
         if (!preg_match("/^ON_([0-9]+)$/", $data, $matches)) {
-            throw new \RuntimeException("Unrecognised frequency for alarm (" . $data . "), please report this issue at github.com/duncan3dc/sonos/issues");
+            throw new \RuntimeException("Unrecognised frequency for alarm ({$data}), please report this issue at github.com/duncan3dc/sonos/issues");
         }
 
         $data = $matches[1];
         $days = 0;
-        $tests = [
-            "0" =>  self::MONDAY,
-            "1" =>  self::TUESDAY,
-            "2" =>  self::WEDNESDAY,
-            "3" =>  self::THURSDAY,
-            "4" =>  self::FRIDAY,
-            "5" =>  self::SATURDAY,
-            "6" =>  self::SUNDAY,
-        ];
-        foreach ($tests as $key => $val) {
+        foreach ($this->days as $key => $val) {
             if (strpos($data, (string) $key) !== false) {
                 $days = $days | $val;
             }
@@ -255,16 +259,7 @@ class Alarm
     public function setFrequency($frequency)
     {
         $recurrence = "ON_";
-        $days = [
-            "0" =>  self::MONDAY,
-            "1" =>  self::TUESDAY,
-            "2" =>  self::WEDNESDAY,
-            "3" =>  self::THURSDAY,
-            "4" =>  self::FRIDAY,
-            "5" =>  self::SATURDAY,
-            "6" =>  self::SUNDAY,
-        ];
-        foreach ($days as $key => $val) {
+        foreach ($this->days as $key => $val) {
             if ($frequency & $val) {
                 $recurrence .= $key;
             }

@@ -5,6 +5,228 @@ Changelog
 
 --------
 
+## 1.9.11 - 2017-11-25
+
+### Added
+
+* [Support] Loosen the requirement on psr/log.
+
+--------
+
+## 1.9.10 - 2017-11-03
+
+### Added
+
+* [Network] Added support for the new ONE devices.
+
+--------
+
+## 1.9.9 - 2017-09-29
+
+### Added
+
+* [Network] Added support for the PLAYBASE devices.
+* [Support] Added support for PHP 7.1
+
+### Removed
+
+* [Support] Dropped support for HHVM
+
+--------
+
+## 1.9.8 - 2017-02-22
+
+### Fixed
+
+* [Tracks] Added a GoogleUnlimited track to support Google unlimited tracks.
+
+--------
+
+## 1.9.7 - 2017-02-19
+
+### Fixed
+
+* [Controllers] Ensure PlayBar streaming continues after using interrupt().
+
+--------
+
+## 1.9.6 - 2017-02-12
+
+### Fixed
+
+* [Tracks] Allow text-to-speech messages longer than 100 characters.
+
+--------
+
+## 1.9.5 - 2017-01-19
+
+### Added
+
+* [Logging] Soap request and responses are now logged under the Debug level.
+* [Support] Added support for PHP 7.1
+
+--------
+
+## 1.9.4 - 2016-12-31
+
+### Fixed
+
+* [Network] Added support for the new version of the PLAY:1.
+
+--------
+
+## 1.9.3 - 2016-10-04
+
+### Fixed
+
+* [Streams] Ensure the title is picked up when available.
+* [Queues] Prevent inifite loop when the start position is invalid.
+
+--------
+
+## 1.9.2 - 2016-09-12
+
+### Added
+
+* [Controller] Allow the Network instance in use to be retrieved using getNetwork().
+
+### Fixed
+
+* [Tracks] Fix the caching of text-to-speech files.
+
+--------
+
+## 1.9.1 - 2016-03-13
+
+### Added
+
+* [Network] Add support for the ZP100 device.
+
+--------
+
+## 1.9.0 - 2016-03-12
+
+### Added
+
+* [Controller] Allow the Line-In to be controlled.
+
+### Changed
+
+* [Controller] The isStreaming() method now returns true when streaming from Line-In.
+
+--------
+
+## 1.8.0 - 2016-01-10
+
+### Added
+
+* [Network] Allow the network interface to be specified using Network::setNetworkInterface().
+
+### Changed
+
+* [Network] Correct the cache lookup to only use cache from the same network interface and multicast address.
+
+--------
+
+## 1.7.4 - 2015-12-03
+
+### Fixed
+
+* [Controllers] The getStateDetails() method can now handle Line-In streams and return a valid State instance.
+
+--------
+
+## 1.7.3 - 2015-11-19
+
+### Fixed
+
+* [Radio] Correct the constants used for retrieving favourites.
+* [Alarms] Fix HHVM handling of days (array constants not valid).
+
+--------
+
+## 1.7.2 - 2015-10-18
+
+### Fixed
+
+* [Alarms] Correct the handling of days (Sunday is zero and the rest were off by one).
+
+--------
+
+## 1.7.1 - 2015-10-16
+
+### Fixed
+
+* [Playlists] Correct the adding of tracks that was broken in 1.5.0.
+
+--------
+
+## 1.7.0 - 2015-09-19
+
+### Added
+
+* [Tracks] Created a Google track to handle their specific metadata.
+* [Tracks] Allow the Spotify region to be overridden.
+
+### Fixed
+
+* [Tracks] Prevent other services being incorrectly treated as Deezer tracks.
+
+### Changed
+
+* [Support] Drop support for PHP 5.5, as it nears end-of-life and constant expressions require 5.6
+
+--------
+
+## 1.6.1 - 2015-09-16
+
+### Fixed
+
+* [Playlist] Ensure the TrackFactory is available when working with playlists.
+
+--------
+
+## 1.6.0 - 2015-09-09
+
+### Added
+
+* [Tracks] Created Spotify/Deezer tracks to handle their specific metadata.
+
+### Fixed
+
+* [Tracks] The album art now only prepends a host if it is missing one
+
+### Removed
+
+* [Tracks] The QueueTrack has been merged with the Track class.
+
+--------
+
+## 1.5.1 - 2015-09-08
+
+### Added
+
+* [Network] Add support for the ZP80 ZonePlayer device.
+
+--------
+
+## 1.5.0 - 2015-08-29
+
+### Changed
+
+* [Tracks] Use league/flysystem to allow access to SMB shares from other machines.
+* [Queues] Improve efficiency of adding tracks by adding up to 16 tracks at once.
+
+--------
+
+## 1.4.2 - 2015-08-16
+
+### Changed
+
+* [Network] Improve the topology caching as these change fairly frequently.
+
+--------
+
 ## 1.4.0 - 2015-06-15
 
 ### Added

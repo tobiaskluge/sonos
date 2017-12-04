@@ -1,9 +1,10 @@
 <?php
 
-namespace duncan3dc\Sonos\Test;
+namespace duncan3dc\SonosTests;
 
 use duncan3dc\Sonos\Controller;
-use duncan3dc\Sonos\Network;
+use duncan3dc\Sonos\Queue;
+use duncan3dc\Sonos\Speaker;
 
 class ControllerLiveTest extends LiveTest
 {
@@ -225,5 +226,12 @@ class ControllerLiveTest extends LiveTest
     public function testGetQueue()
     {
         $this->assertInstanceOf(Queue::class, $this->network->getController()->getQueue());
+    }
+
+
+    public function testGetNetwork()
+    {
+        $controller = $this->network->getController();
+        $this->assertSame($this->network, $controller->getNetwork());
     }
 }
